@@ -137,7 +137,7 @@ export default function IncidentQueue() {
             </div>
             <h3 className="font-semibold text-gray-900 text-base font-sans">File Incident Ticket</h3>
           </div>
-          <p className="text-xs text-gray-500">Report manual stadium anomalies to the AI router</p>
+          <p className="text-xs text-gray-500">Report manual stadium anomalies directly to the AI Decision Engine</p>
         </div>
 
         {errorMessage && (
@@ -210,7 +210,7 @@ export default function IncidentQueue() {
             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 min-h-[44px]"
             disabled={isSubmitting || !description.trim()}
           >
-            {isSubmitting ? "Processing AI Routing..." : "Report & Ingest Ticket"}
+            {isSubmitting ? "Analyzing via AI Decision Engine..." : "Report & Ingest to Decision Engine"}
           </button>
         </form>
       </div>
@@ -222,9 +222,9 @@ export default function IncidentQueue() {
             <div className="p-1.5 bg-green-50 text-green-600 rounded-md">
               <ClipboardList className="h-5 w-5" />
             </div>
-            <h3 className="font-semibold text-gray-900 text-base font-sans">AI Decision & Triage Log</h3>
+            <h3 className="font-semibold text-gray-900 text-base font-sans">AI Decision Engine Triage Log</h3>
           </div>
-          <p className="text-xs text-gray-500">Chronological triage queues classified by our neural middleware</p>
+          <p className="text-xs text-gray-500">Chronological triage queue managed by the AI Decision Engine</p>
         </div>
 
         {/* Scrollable container virtualized by styling bounds */}
@@ -268,7 +268,7 @@ export default function IncidentQueue() {
                   </p>
                   <div className="bg-green-50/50 border border-green-50 rounded-lg p-2.5 text-[11px] leading-relaxed text-green-900">
                     <strong className="text-[9px] font-bold uppercase tracking-wider text-green-700 block mb-0.5">
-                      AI Router Strategy recommendation:
+                      AI Decision Engine Reasoning & Mitigation Action:
                     </strong>
                     {inc.recommendedAction}
                   </div>

@@ -1,4 +1,5 @@
 import { StadiumZone } from "../types.js";
+import { DENSITY_HIGH, DENSITY_REROUTE_THRESHOLD } from "./constants.js";
 
 interface AdjacencyMap {
   [key: string]: StadiumZone[];
@@ -57,7 +58,7 @@ export function findCongestionAwarePath(
       if (!current.path.includes(neighbor)) {
         const neighborDensity = zoneDensities[neighbor] || 0;
         // Escalated cost for congested zones to actively route pathing away
-        const weight = neighborDensity > 80 ? neighborDensity * 3 : neighborDensity; 
+        const weight = neighborDensity > DENSITY_HIGH ? neighborDensity * 3 : neighborDensity; 
         
         queue.push({
           zone: neighbor,
@@ -70,7 +71,7 @@ export function findCongestionAwarePath(
 
   // Determine if we are rerouting the spectator away from a direct route due to congestion
   // Example: Direct concourse (Zone E) is crowded, so we go via outer rings
-  const alternativeRouteRecommended = bestPath.some(zone => (zoneDensities[zone] || 0) > 75);
+  const alternativeRouteRecommended = bestPath.some(zone => (zoneDensities[zone] || 0) > DENSITY_REROUTE_THRESHOLD);
 
   return {
     path: bestPath,

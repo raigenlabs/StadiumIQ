@@ -1,6 +1,7 @@
 import { SimulationState, StadiumZone, Incident, TransportFeed, ZoneMetrics, IncidentType, PriorityLevel, IncidentStatus } from "../../src/types.js";
 import { sanitizeStr, sanitizeVal } from "../../src/utils/sanitize.js";
 import { processEventThroughDecisionEngine } from "./decisionEngine.js";
+import { DENSITY_WARN, DENSITY_HIGH, DENSITY_ALERT_TRIGGER, DENSITY_DEFAULT_FALLBACK, WASTE_FILL_CRITICAL } from "../../src/utils/constants.js";
 
 // In-memory simulation state
 let state: SimulationState = {
@@ -128,15 +129,15 @@ export async function runSimulationTick(): Promise<void> {
   });
 
   // 2. Adjust transit wait times based on crowd density of Zone F (Fan festival) and Zone E (Concourse)
-  const fDensity = state.metrics.find(m => m.zone === StadiumZone.ZONE_F)?.crowdDensity || 50;
-  const eDensity = state.metrics.find(m => m.zone === StadiumZone.ZONE_E)?.crowdDensity || 50;
+  const fDensity = state.metrics.find(m => m.zone === StadiumZone.ZONE_F)?.crowdDensity || DENSITY_DEFAULT_FALLBACK;
+  const eDensity = state.metrics.find(m => m.zone === StadiumZone.ZONE_E)?.crowdDensity || DENSITY_DEFAULT_FALLBACK;
 
   state.transportFeeds = state.transportFeeds.map((feed) => {
     let multiplier = 1.0;
-    if (fDensity > 80 || eDensity > 80) {
+    if (fDensity > DENSITY_HIGH || eDensity > DENSITY_HIGH) {
       multiplier = 2.2;
       feed.status = "critical";
-    } else if (fDensity > 60 || eDensity > 60) {
+    } else if (fDensity > DENSITY_WARN || eDensity > DENSITY_WARN) {
       multiplier = 1.5;
       feed.status = "congested";
     } else {
@@ -151,14 +152,14 @@ export async function runSimulationTick(): Promise<void> {
 
   // 3. Auto-trigger alerts/incidents if thresholds are breached
   for (const metric of state.metrics) {
-    if (metric.wasteFillLevel >= 90) {
+    if (metric.wasteFillLevel >= WASTE_FILL_CRITICAL) {
       // Check if an unresolved waste incident already exists for this zone
       const existing = state.incidents.find(
         (inc) => inc.zone === metric.zone && inc.type === "sustainability" && inc.status !== "resolved"
       );
       if (!existing) {
         await createNewIncident(
-          `Waste container in ${metric.zone} has exceeded 90% threshold capacity. Immediate clearing required.`,
+          `Waste container in ${metric.zone} has exceeded ${WASTE_FILL_CRITICAL}% threshold capacity. Immediate clearing required.`,
           metric.zone,
           "sustainability",
           "sensor"
@@ -166,7 +167,7 @@ export async function runSimulationTick(): Promise<void> {
       }
     }
 
-    if (metric.crowdDensity >= 92) {
+    if (metric.crowdDensity >= DENSITY_ALERT_TRIGGER) {
       // Check if an unresolved crowd density incident already exists
       const existing = state.incidents.find(
         (inc) => inc.zone === metric.zone && inc.type === "crowd" && inc.status !== "resolved"
@@ -196,7 +197,7 @@ export async function createNewIncident(
 ): Promise<Incident> {
   const cleanDesc = sanitizeStr(description);
   const zoneMetrics = state.metrics.find((m) => m.zone === zone);
-  const currentDensity = zoneMetrics ? zoneMetrics.crowdDensity : 50;
+  const currentDensity = zoneMetrics ? zoneMetrics.crowdDensity : DENSITY_DEFAULT_FALLBACK;
 
   // Run through our AI Decision Engine logic
   const decision = await processEventThroughDecisionEngine(cleanDesc, zone, type, currentDensity);

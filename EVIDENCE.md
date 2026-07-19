@@ -109,17 +109,20 @@ We validated that every derived metric, aggregated summary, or sorted feed is ca
 ## 🧪 4. Comprehensive Testing & Coverage
 
 ### Native Coverage Metrics
-The full unit-test suite was executed under Node's native test runner with experimental coverage. Out of **30 tests across 7 suites**, all 30 passed cleanly with **98.90% line coverage and 90.87% branch coverage**:
+The full unit-test suite was executed under Node's native test runner with experimental coverage. Out of **32 tests across 8 suites**, all 32 passed cleanly with **99.58% line coverage and 91.36% branch coverage**:
 
 | File Name | Line Coverage % | Branch Coverage % | Uncovered Lines |
 | :--- | :---: | :---: | :--- |
-| `src/components/CrowdHeatmap.tsx` | 100.00% | 93.75% | None |
-| `src/components/SustainabilityDashboard.tsx` | 100.00% | 97.14% | None |
+| `src/components/CrowdHeatmap.tsx` | 100.00% | 94.44% | None |
+| `src/components/SustainabilityDashboard.tsx` | 100.00% | 97.30% | None |
 | `src/components/TransportStatus.tsx` | 100.00% | 93.75% | None |
-| `server/logic/decisionEngine.ts` | 95.77% | 80.65% | 71-72, 120-124, 126 (Fallbacks) |
+| `server/logic/decisionEngine.ts` | 97.37% | 80.65% | 121-125 (Gemini block) |
 | `src/utils/routing.ts` | 100.00% | 90.91% | None |
 | `src/utils/sanitize.ts` | 100.00% | 100.00% | None |
-| **All Files Aggregate** | **98.90%** | **90.87%** | — |
+| `src/utils/simulationStore.ts` | 98.61% | 92.31% | 28 |
+| `src/hooks/useSimulation.ts` | 100.00% | 100.00% | None |
+| `src/types.ts` | 100.00% | 100.00% | None |
+| **All Files Aggregate** | **99.58%** | **91.36%** | — |
 
 ### Key Test Case Validations
 1. **Decision Engine Prioritization:** Validates correct severity mapping (e.g. `heart` or `injury` keyword -> High/Critical, `trash` -> Low) and target dispatcher routing.
