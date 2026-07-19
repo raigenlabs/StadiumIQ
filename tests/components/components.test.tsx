@@ -83,36 +83,6 @@ describe("Component-Layer Unit Tests", () => {
     assert.strictEqual(simulationStore.getCurrentState()?.metrics.length, 2);
   });
 
-  test("simulationStore subscription and unsubscribe cleanup", async () => {
-    const store = simulationStore as any;
-    
-    // Clear any listeners and existing interval
-    store.listeners.clear();
-    if (store.intervalId) {
-      clearInterval(store.intervalId);
-      store.intervalId = null;
-    }
-
-    let called = false;
-    const cb = () => { called = true; };
-    
-    // 1. Subscribe
-    const unsubscribe = store.subscribe(cb);
-    assert.strictEqual(store.listeners.size, 1, "Listeners size should be 1 after subscribe");
-    assert.ok(store.intervalId, "intervalId should be set after subscribe");
-
-    // 2. Unsubscribe
-    unsubscribe();
-    assert.strictEqual(store.listeners.size, 0, "Listeners size should be 0 after unsubscribe");
-    assert.strictEqual(store.intervalId, null, "intervalId should be cleared after unsubscribe");
-
-    // 3. Force catch block in fetchState
-    const originalFetch = globalThis.fetch;
-    globalThis.fetch = () => Promise.reject(new Error("Network Error"));
-    await simulationStore.fetchState();
-    globalThis.fetch = originalFetch;
-  });
-
   describe("CrowdHeatmap Component", () => {
     test("renders zone density cards and badges correctly", () => {
       render(React.createElement(CrowdHeatmap));

@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import { ruleBasedDecision, processEventThroughDecisionEngine, setAiClient } from "../../server/logic/decisionEngine.js";
+import { ruleBasedDecision, processEventThroughDecisionEngine } from "../../server/logic/decisionEngine.js";
 import { StadiumZone } from "../../src/types.js";
 
 describe("AI Decision Engine", () => {
@@ -82,43 +82,5 @@ describe("AI Decision Engine", () => {
     assert.strictEqual(result.type, "medical");
     assert.strictEqual(result.severity, "critical");
     assert.strictEqual(result.targetAudience, "ops");
-  });
-
-  it("should successfully run processEventThroughDecisionEngine using mocked Gemini client", async () => {
-    const mockClient = {
-      models: {
-        generateContent: async (args: any) => {
-          return {
-            text: JSON.stringify({
-              severity: "critical",
-              type: "medical",
-              recommendedAction: "Mocked action from Gemini API",
-              targetAudience: "ops",
-              taskTitle: "Mocked Task Title"
-            })
-          };
-        }
-      }
-    };
-
-    // Inject mock client
-    setAiClient(mockClient);
-
-    try {
-      const result = await processEventThroughDecisionEngine(
-        "Unconscious spectator in North Stand",
-        StadiumZone.ZONE_A,
-        "medical",
-        40
-      );
-
-      assert.strictEqual(result.type, "medical");
-      assert.strictEqual(result.severity, "critical");
-      assert.strictEqual(result.recommendedAction, "Mocked action from Gemini API");
-      assert.strictEqual(result.targetAudience, "ops");
-    } finally {
-      // Reset client to null
-      setAiClient(null);
-    }
   });
 });

@@ -1,7 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { PriorityLevel, IncidentType, DecisionResult, StadiumZone } from "../../src/types.js";
 import { sanitizeStr, sanitizeVal } from "../../src/utils/sanitize.js";
-import { DENSITY_MED, DENSITY_CRITICAL, DENSITY_DEFAULT_FALLBACK } from "../../src/utils/constants.js";
 
 // Lazy initialize Gemini client
 let aiClient: GoogleGenAI | null = null;
@@ -24,13 +23,6 @@ function getGeminiClient(): GoogleGenAI | null {
 }
 
 /**
- * Injects or overrides the internal GoogleGenAI client (primarily used for unit testing).
- */
-export function setAiClient(client: any): void {
-  aiClient = client;
-}
-
-/**
  * Deterministic rule-based fallback decision processor.
  * Extremely robust, handles negative/empty/extreme inputs gracefully.
  */
@@ -38,11 +30,11 @@ export function ruleBasedDecision(
   description: string,
   zone: string,
   typeInput?: string,
-  currentDensity = DENSITY_DEFAULT_FALLBACK
+  currentDensity = 50
 ): DecisionResult {
   const desc = sanitizeStr(description).toLowerCase();
   const zoneStr = sanitizeStr(zone);
-  const density = sanitizeVal(currentDensity, DENSITY_DEFAULT_FALLBACK);
+  const density = sanitizeVal(currentDensity, 50);
 
   let type: IncidentType = "other";
   let severity: PriorityLevel = "low";
@@ -80,10 +72,10 @@ export function ruleBasedDecision(
   // Adjust severity based on critical keywords or high density
   if (desc.includes("critical") || desc.includes("emergency") || desc.includes("cardiac") || desc.includes("fire") || desc.includes("stampede")) {
     severity = "critical";
-  } else if (density > DENSITY_CRITICAL && type === "crowd") {
+  } else if (density > 85 && type === "crowd") {
     severity = "critical";
     recommendedAction = "URGENT: Block entrance gates to this zone. Play automated PA route guidance announcements.";
-  } else if (density > DENSITY_MED && severity === "low") {
+  } else if (density > 70 && severity === "low") {
     severity = "medium";
   }
 
@@ -104,10 +96,10 @@ export async function processEventThroughDecisionEngine(
   description: string,
   zone: StadiumZone,
   typeInput: IncidentType,
-  currentDensity = DENSITY_DEFAULT_FALLBACK
+  currentDensity = 50
 ): Promise<DecisionResult> {
   const sanitizedDesc = sanitizeStr(description);
-  const density = sanitizeVal(currentDensity, DENSITY_DEFAULT_FALLBACK);
+  const density = sanitizeVal(currentDensity, 50);
 
   // 1. Check if Gemini Client is active, if not, use rules
   const ai = getGeminiClient();

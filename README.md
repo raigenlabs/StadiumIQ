@@ -27,30 +27,13 @@ At the center of StadiumIQ sits an in-memory **Stadium Event Simulator** and an 
 
 ---
 
-## 🌟 Core System Capabilities
+## 📊 Honest Disclosure: Live Data Simulation
 
-StadiumIQ elegantly orchestrates the 8 core stadium capabilities around the central **AI Decision Engine**:
+To maintain operational integrity, **all match-day sensors, metrics, and incident streams are fully simulated in-memory**. Crowd, transport, and sustainability data are simulated for this demo via a deterministic generator, architected so real IoT/sensor feeds could be substituted through the same data interface.
 
-1. **Navigation:** Smart, congestion-aware pathfinding (powered by Dijkstra's algorithm) dynamically calculates and routes spectators away from high-density sectors.
-2. **Crowd Management:** Continuous sensor-driven telemetry monitors zone-by-zone crowd density with live visual heatmaps and automated congestion warnings.
-3. **Accessibility:** Detailed multi-lingual voice/visual assistance guides spectators to wheelchair ramps, elevator access corridors, and quiet rooms.
-4. **Transportation:** Boarding timelines and dynamic, crowd-responsive wait time estimates for light-rail and transport shuttle networks.
-5. **Sustainability:** Automated sanitation dispatch triggers for high-fill waste containers paired with active tracking of grid electricity draw.
-6. **Multilingual Assistance:** Multi-lingual assistant panel featuring automatic language detection and conversational translation support.
-7. **Operational Intelligence:** On-demand streaming of an end-of-day executive briefing detailing incident handling efficiency, congestion metrics, and anomalies.
-8. **Real-Time Decision Support:** A central triage queue where manual/sensor tickets are classified and analyzed to produce instant, actionable mitigation strategies.
-
----
-
-## 📊 Simulated-Data Framing & Architecture
-
-Please note that while **all match-day sensors, metrics, and incident streams are generated in-memory**, this is solely to provide a rich, visually active sandbox environment for the operations demonstration. 
-
-The core **AI Decision Engine, Dijkstra congestion routing, multi-lingual translation streaming, and WebSocket/poll state synchronization are real, fully functional, and production-ready**. The underlying operational intelligence is completely real; only the telemetry input is simulated. The system is designed with clean, decoupled interfaces so that standard MQTT, HTTP webhook, or other physical IoT sensor feeds can be hot-swapped directly into a production deployment.
-
-- The simulation tick updates metrics, modifies transit delays, and triggers minor anomalies every few seconds.
-- Dashboards and telemetry feeds are visibly labeled as **"Simulated Feed"** to maintain absolute operational transparency.
-- **Hardware Integration Ready:** Clean abstraction layers make swapping the simulation loops for physical stadium APIs trivial.
+- The system runs on a 5-second background interval loop on the server, automatically updating metrics, adjusting transit shuttle delays, and triggering minor simulated anomalies.
+- All dashboards, charts, and maps are clearly labeled as **"Simulated Feed"** to differentiate from real telemetry.
+- **Hardware Integration Ready:** The entire architecture is built to easily swap the simulation loop with standard MQTT or HTTP webhook bindings to real physical stadium sensor feeds.
 
 ---
 
